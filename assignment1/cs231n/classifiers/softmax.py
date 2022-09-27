@@ -36,21 +36,19 @@ def softmax_loss_naive(W, X, y, reg):
   dS = np.zeros([N, C])
 
   for i in range(N):
-    s = np.matmul(X[i], W)
+    exps = np.exp(np.matmul(X[i], W))
     expssum = 0
     for j in range(C):
-      expssum += np.exp(s[j])
+      expssum += exps[j]
 
-    Pi = np.exp(s[y[i]]) / expssum
-    Li = -np.log(Pi)
+    Li = -np.log(exps[y[i]] / expssum)
     loss += Li
 
-    dS[i, :] = -1 / N / Pi
     for j in range(C):
       if j != y[i]:
-        dS[i, j] *= np.exp(s[y[i]]) * (-1) / (expssum ** 2) * np.exp(s[j])
+        dS[i, j] = exps[j] / expssum / N
       else:
-        dS[i, y[i]] *= (np.exp(s[y[i]]) * expssum - np.exp(s[y[i]]) ** 2 ) / (expssum ** 2)
+        dS[i, y[i]] = (-expssum + exps[y[i]]) / expssum / N
       for k in range(D):
         dW[k, j] += dS[i, j] * X[i, k]
 
@@ -85,15 +83,12 @@ def softmax_loss_vectorized(W, X, y, reg):
   expS = np.exp(S)
   expSy = expS[np.arange(N), y].reshape(-1, 1)
   expSsum = np.sum(expS, axis=1).reshape(-1, 1)
-  expSsum2 = np.square(expSsum).reshape(-1, 1)
 
-  Pi = np.divide( expSy, expSsum )
-  loss = np.mean(-np.log(Pi))
+  loss = np.mean(-np.log(np.divide( expSy, expSsum )))
 
-  dS = -1 * np.multiply(expSy, expS)
-  dS[np.arange(N), y] += np.multiply(expSy, expSsum).reshape(-1)
-  dS = np.divide(dS, expSsum2)
-  dS = - 1/N * np.divide(dS, Pi)
+  dS = -1 * np.divide(expS, expSsum)
+  dS[np.arange(N), y] += 1
+  dS /= -N
   dW = np.matmul(X.T, dS)
 
   loss += reg * np.sum(W * W)
