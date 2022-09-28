@@ -213,6 +213,7 @@ class TwoLayerNet(object):
         # Decay learning rate
         learning_rate *= learning_rate_decay
 
+    
     return {
       'loss_history': loss_history,
       'train_acc_history': train_acc_history,
