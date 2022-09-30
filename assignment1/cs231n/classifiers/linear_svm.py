@@ -28,8 +28,6 @@ def svm_loss_naive(W, X, y, reg):
   loss = 0.0
   for i in xrange(num_train):
     scores = X[i].dot(W)
-    #if i <= 1:
-    #  print(scores)
     correct_class_score = scores[y[i]]
     for j in xrange(num_classes):
       if j == y[i]:
@@ -37,8 +35,9 @@ def svm_loss_naive(W, X, y, reg):
       margin = scores[j] - correct_class_score + 1 # note delta = 1
       if margin > 0:
         loss += margin
-        dW[:, j] += X[i].T
-        dW[:, y[i]] -= X[i].T
+        for k in range(W.shape[0]):
+          dW[k, j] += X.T[k][i]
+          dW[k, y[i]] -= X.T[k][i]
 
   # Right now the loss is a sum over all training examples, but we want it
   # to be an average instead so we divide by num_train.
@@ -75,10 +74,11 @@ def svm_loss_vectorized(W, X, y, reg):
   # Implement a vectorized version of the structured SVM loss, storing the    #
   # result in loss.                                                           #
   #############################################################################
+  N = X.shape[0]
   S = np.matmul(X, W) # score matrix (N, C)
-  L = np.maximum(S + np.ones(S.shape) - S[np.arange(X.shape[0]), y].reshape(-1, 1), np.zeros(S.shape))
-  L[np.array([i for i in range(X.shape[0])]), y] = 0
-  loss = np.sum(L, axis=None) / X.shape[0] + reg * np.sum(W * W)
+  L = np.maximum(S + np.ones(S.shape) - S[np.arange(N), y].reshape(-1, 1), np.zeros(S.shape))
+  L[np.arange(N), y] = 0
+  loss = np.sum(L, axis=None) / N + reg * np.sum(W * W)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -94,9 +94,9 @@ def svm_loss_vectorized(W, X, y, reg):
   # loss.                                                                     #
   #############################################################################
   B = (L > 0) * 1 # (N, C)
-  B[np.arange(X.shape[0]), y] = -np.sum(B, axis=1)
+  B[np.arange(N), y] = -np.sum(B, axis=1)
   dW = dW + np.matmul(X.T, B)
-  dW /= X.shape[0]
+  dW /= N
   dW += reg * 2 * W
   #############################################################################
   #                             END OF YOUR CODE                              #
