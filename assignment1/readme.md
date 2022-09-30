@@ -14,3 +14,6 @@ Remark:
     - tune hyper parameter
   - Q5: `features.ipynb`
     - Apply different models on HOG and HSV features
+  - Q6 Bonus:
+    - in `two_layer_net.ipynb`, tune hyperparameters or apply other strategies to achieve some goal
+    - in `features.ipynb`, (1) design and implement your own features and compare the performance with the baseline (2) Do something interesting using the material and code in this assignment
