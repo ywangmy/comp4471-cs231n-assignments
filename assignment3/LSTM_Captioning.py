@@ -110,6 +110,6 @@ plt.xlabel('Iteration')
 plt.ylabel('Loss')
 plt.title('Training loss history')
 #plt.show()
-plt.savefig('books_read.png')
+plt.savefig('result.png')
 
 evaluate_model(big_lstm_model)
