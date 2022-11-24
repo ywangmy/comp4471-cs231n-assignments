@@ -1,2 +1,4 @@
 **/*~undo-tree~
 **/.DS_Store
+**/cs231n/datasets/cifar-10-batches-py/*
+**/cs231n/datasets/MNIST_data/*
