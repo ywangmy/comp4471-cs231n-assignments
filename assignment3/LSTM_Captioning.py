@@ -79,14 +79,15 @@ med_data = data
 
 np.random.seed(231)
 
-big_data = load_coco_data(max_train=20)
+#big_data = load_coco_data(max_train=20)
+big_data = data
 
 big_lstm_model = CaptioningRNN(
     cell_type='lstm',
     word_to_idx=data['word_to_idx'],
     input_dim=data['train_features'].shape[1],
-    hidden_dim=512,
-    wordvec_dim=256,
+    hidden_dim=1024,
+    wordvec_dim=512,
     dtype=np.float32,
 )
 
@@ -94,7 +95,7 @@ big_lstm_solver = CaptioningSolver(
     big_lstm_model, big_data,
     update_rule='adam',
     num_epochs=50,
-    batch_size=25,
+    batch_size=512,
     optim_config={
         'learning_rate': 5e-4,
     },
